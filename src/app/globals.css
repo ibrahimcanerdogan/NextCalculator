@@ -3,8 +3,32 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Modern Tema */
+  --modern-bg: #ffffff;
+  --modern-button: #f8fafc;
+  --modern-button-hover: #e2e8f0;
+  --modern-display: #f1f5f9;
+  --modern-text: #1e293b;
+  --modern-accent: #3b82f6;
+  --modern-border: #e2e8f0;
+  --modern-shadow: rgba(0, 0, 0, 0.1);
+  --modern-page-bg: #f1f5f9;
+  --modern-glass: rgba(255, 255, 255, 0.7);
+  --modern-gradient: linear-gradient(135deg, #3b82f6, #2563eb);
+
+  /* Nostaljik Tema */
+  --retro-bg: #2c3e50;
+  --retro-button: #34495e;
+  --retro-button-hover: #2c3e50;
+  --retro-display: #1a252f;
+  --retro-text: #ecf0f1;
+  --retro-accent: #e67e22;
+  --retro-border: #2c3e50;
+  --retro-page-bg: #1a252f;
+  --retro-glow: rgba(230, 126, 34, 0.3);
+  --retro-crt: rgba(18, 16, 16, 0.1);
+  --retro-scanline: rgba(255, 255, 255, 0.05);
+  --retro-flicker: rgba(255, 255, 255, 0.02);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,7 +39,537 @@
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--modern-text);
+  background: var(--modern-page-bg);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: all 0.3s ease;
+}
+
+body.retro-theme {
+  color: var(--retro-text);
+  background: var(--retro-page-bg);
+  font-family: 'Courier New', Courier, monospace;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body.retro-theme::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      var(--retro-crt) 0px,
+      var(--retro-crt) 1px,
+      transparent 1px,
+      transparent 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      var(--retro-scanline) 0px,
+      var(--retro-scanline) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.15;
+  animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.15; }
+  50% { opacity: 0.12; }
+  100% { opacity: 0.15; }
+}
+
+.calculator-button {
+  @apply h-16 w-16 rounded-lg text-2xl font-medium transition-all duration-200 
+         hover:shadow-md active:shadow-inner focus:outline-none
+         border;
+  background: var(--modern-button);
+  color: var(--modern-text);
+  border-color: var(--modern-border);
+  box-shadow: 0 2px 4px var(--modern-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.retro-theme .calculator-button {
+  @apply rounded-md;
+  background: linear-gradient(145deg, var(--retro-button), var(--retro-button-hover));
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  box-shadow: none;
+  text-shadow: 0 0 5px var(--retro-glow);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.retro-theme .calculator-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px var(--retro-glow);
+  text-shadow: 0 0 8px var(--retro-glow);
+}
+
+.retro-theme .calculator-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 5px var(--retro-glow);
+}
+
+/* Sıfır butonu için özel stil */
+.calculator-button.col-span-2 {
+  @apply w-full;
+}
+
+/* Ekran stili */
+.calculator-display {
+  @apply rounded-lg p-6 mb-8 border flex-grow;
+  background: var(--modern-glass);
+  border-color: var(--modern-border);
+  box-shadow: 
+    inset 0 2px 4px var(--modern-shadow),
+    0 4px 6px rgba(0, 0, 0, 0.05);
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.retro-theme .calculator-display {
+  @apply rounded-md;
+  background: linear-gradient(145deg, var(--retro-display), var(--retro-button));
+  border-color: var(--retro-border);
+  box-shadow: 
+    0 0 20px var(--retro-glow),
+    inset 0 0 10px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.retro-theme .calculator-display::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.1) 100%
+  );
+  pointer-events: none;
+  animation: scanline 8s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Modern tema için ekran yazı stilleri */
+.calculator-display .text-gray-500 {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  word-break: break-all;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+  color: var(--modern-text);
+  font-weight: 500;
+}
+
+.calculator-display .text-gray-800 {
+  font-size: 3.5rem;
+  line-height: 1.2;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  transition: font-size 0.2s ease;
+  font-weight: 600;
+  color: var(--modern-text);
+  letter-spacing: -0.02em;
+}
+
+/* Uzun sayılar için otomatik boyut ayarlaması - Modern tema */
+.calculator-display .text-gray-800[data-length="long"] {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+/* Nostaljik tema için ekran yazı stilleri */
+.retro-theme .calculator-display .text-gray-500 {
+  color: var(--retro-text);
+  opacity: 0.7;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.05em;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  word-break: break-all;
+  text-shadow: 0 0 5px var(--retro-glow);
+  margin-bottom: 0.5rem;
+}
+
+.retro-theme .calculator-display .text-gray-800 {
+  color: var(--retro-text);
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.05em;
+  font-size: 3.5rem;
+  line-height: 1.2;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  transition: font-size 0.2s ease;
+  text-shadow: 0 0 8px var(--retro-glow);
+  font-weight: 600;
+}
+
+/* Uzun sayılar için otomatik boyut ayarlaması - Nostaljik tema */
+.retro-theme .calculator-display .text-gray-800[data-length="long"] {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+}
+
+/* Hesap makinesi konteyner */
+.calculator-container {
+  @apply w-full max-w-2xl mx-auto p-6 rounded-xl shadow-lg relative;
+  background: var(--modern-glass);
+  transition: all 0.3s ease;
+  min-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--modern-border);
+}
+
+.retro-theme .calculator-container {
+  background: var(--retro-bg);
+  box-shadow: 
+    0 0 30px var(--retro-glow),
+    0 0 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--retro-border);
+  position: relative;
+}
+
+.retro-theme .calculator-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Buton grid düzeni */
+.calculator-grid {
+  @apply grid grid-cols-4 gap-4;
+  margin-top: auto;
+  padding-top: 1.5rem;
+}
+
+/* Buton boyutları */
+.calculator-button {
+  @apply h-16 w-full rounded-lg text-2xl font-medium transition-all duration-200 
+         hover:shadow-md active:shadow-inner focus:outline-none
+         border;
+  background: var(--modern-button);
+  color: var(--modern-text);
+  border-color: var(--modern-border);
+  box-shadow: 0 2px 4px var(--modern-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.retro-theme .calculator-button {
+  @apply rounded-md;
+  background: linear-gradient(145deg, var(--retro-button), var(--retro-button-hover));
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  box-shadow: none;
+  text-shadow: 0 0 5px var(--retro-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sıfır butonu için özel stil */
+.calculator-button.col-span-2 {
+  @apply w-full;
+}
+
+/* Geçmiş/Bilimsel butonları için özel stil */
+.mode-button {
+  @apply py-2 rounded-lg text-sm font-medium transition-all duration-200
+         border hover:shadow-md;
+  background: var(--modern-glass);
+  color: var(--modern-text);
+  border-color: var(--modern-border);
+  box-shadow: 0 2px 4px var(--modern-shadow);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.retro-theme .mode-button {
+  @apply rounded-md;
+  background: linear-gradient(145deg, var(--retro-button), var(--retro-button-hover));
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  box-shadow: none;
+  text-shadow: 0 0 5px var(--retro-glow);
+  transition: all 0.3s ease;
+}
+
+.mode-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 2px var(--modern-shadow);
+}
+
+.mode-button.active {
+  background: var(--modern-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.retro-theme .mode-button.active {
+  background: linear-gradient(145deg, var(--retro-accent), #d35400);
+  border-color: var(--retro-accent);
+  box-shadow: 0 0 15px var(--retro-glow);
+  text-shadow: 0 0 8px var(--retro-glow);
+}
+
+.retro-theme .mode-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px var(--modern-shadow);
+  background: var(--modern-button-hover);
+}
+
+/* Geçmiş butonu için özel stil */
+.mode-button.history {
+  @apply py-2 rounded-lg text-sm font-medium transition-all duration-200
+         border hover:shadow-md;
+  background: var(--modern-gradient);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.retro-theme .mode-button.history {
+  @apply rounded-md;
+  background: linear-gradient(145deg, var(--retro-accent), #d35400);
+  color: var(--retro-text);
+  border-color: var(--retro-accent);
+  box-shadow: 0 0 15px var(--retro-glow);
+  text-shadow: 0 0 8px var(--retro-glow);
+}
+
+.retro-theme .mode-button.history:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
+}
+
+.mode-button.history:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.mode-button.history.active {
+  background: var(--modern-accent);
+  color: white;
+  border-color: var(--modern-accent);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.retro-theme .mode-button.history.active {
+  background: linear-gradient(145deg, var(--retro-accent), #d35400);
+  border-color: var(--retro-accent);
+  box-shadow: 0 0 15px var(--retro-glow);
+  text-shadow: 0 0 8px var(--retro-glow);
+}
+
+/* Operatör butonları için özel stil */
+.operator-button {
+  background: var(--modern-gradient) !important;
+  color: white !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3) !important;
+}
+
+.retro-theme .operator-button {
+  background: linear-gradient(145deg, var(--retro-accent), #d35400) !important;
+  border-color: var(--retro-accent) !important;
+  box-shadow: 0 0 15px var(--retro-glow) !important;
+  text-shadow: 0 0 8px var(--retro-glow) !important;
+}
+
+/* Tema değiştirici switch */
+.theme-switch {
+  @apply relative inline-flex items-center h-10 rounded-full w-20 transition-all duration-300 ease-in-out
+         shadow-lg border-2 cursor-pointer;
+  background: var(--modern-glass);
+  border-color: var(--modern-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.retro-theme .theme-switch {
+  background: var(--retro-button);
+  border-color: var(--retro-border);
+  box-shadow: 0 0 10px var(--retro-glow);
+}
+
+.theme-switch-handle {
+  @apply inline-block w-8 h-8 transform rounded-full transition-all duration-300 ease-in-out
+         shadow-md flex items-center justify-center;
+  background: var(--modern-gradient);
+  margin: 0 2px;
+  z-index: 20;
+}
+
+.retro-theme .theme-switch-handle {
+  background: var(--retro-accent);
+  transform: translateX(2.5rem);
+  box-shadow: 0 0 10px var(--retro-glow);
+}
+
+.theme-switch:hover {
+  @apply shadow-xl;
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.theme-switch:active {
+  transform: scale(0.95);
+}
+
+.theme-switch-handle::after {
+  content: '';
+  @apply absolute w-6 h-6 rounded-full transition-all duration-300;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0);
+}
+
+.theme-switch:hover .theme-switch-handle::after {
+  transform: scale(1);
+}
+
+/* Geçmiş ekranı için özel stil */
+.history-display {
+  @apply calculator-display;
+  max-height: calc(100vh - 12rem);
+  overflow-y: auto;
+  background: var(--modern-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.history-display .empty-message {
+  @apply flex flex-col items-center justify-center h-full text-gray-500;
+  min-height: 200px;
+  color: var(--modern-text);
+  opacity: 0.8;
+}
+
+.retro-theme .history-display .empty-message {
+  color: var(--retro-text);
+  opacity: 0.8;
+  text-shadow: 0 0 5px var(--retro-glow);
+}
+
+.history-display .empty-message .title {
+  @apply text-lg mb-2 font-medium;
+  color: var(--modern-text);
+  font-weight: 600;
+}
+
+.history-display .empty-message .subtitle {
+  @apply text-sm opacity-75;
+  color: var(--modern-text);
+}
+
+/* Ana sayfa düzeni */
+.main-container {
+  @apply min-h-screen p-4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Nostaljik tema için özel etiket stilleri */
+.retro-theme .converter-label,
+.retro-theme .date-label {
+  color: var(--retro-text);
+  opacity: 0.9;
+  text-shadow: 0 0 5px var(--retro-glow);
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.05em;
+}
+
+.retro-theme .converter-select,
+.retro-theme .date-input {
+  background: var(--retro-button);
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  text-shadow: 0 0 3px var(--retro-glow);
+}
+
+.retro-theme .converter-select:focus,
+.retro-theme .date-input:focus {
+  border-color: var(--retro-accent);
+  box-shadow: 0 0 10px var(--retro-glow);
+}
+
+/* Nostaljik tema için yüzde hesaplayıcı stilleri */
+.retro-theme .percentage-label {
+  color: var(--retro-text);
+  opacity: 0.9;
+  text-shadow: 0 0 5px var(--retro-glow);
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 0.05em;
+}
+
+.retro-theme .percentage-input {
+  background: var(--retro-button);
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  text-shadow: 0 0 3px var(--retro-glow);
+}
+
+.retro-theme .percentage-input:focus {
+  border-color: var(--retro-accent);
+  box-shadow: 0 0 10px var(--retro-glow);
+}
+
+.retro-theme .percentage-result {
+  background: linear-gradient(145deg, var(--retro-button), var(--retro-button-hover));
+  border-color: var(--retro-border);
+  color: var(--retro-text);
+  text-shadow: 0 0 3px var(--retro-glow);
+}
+
+.retro-theme .percentage-result .text-gray-500 {
+  color: var(--retro-text);
+  opacity: 0.7;
+  text-shadow: 0 0 3px var(--retro-glow);
+}
+
+.retro-theme .percentage-result .text-gray-800 {
+  color: var(--retro-text);
+  text-shadow: 0 0 5px var(--retro-glow);
 }
