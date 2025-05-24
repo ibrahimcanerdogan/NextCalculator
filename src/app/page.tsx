@@ -18,7 +18,6 @@ export default function Home() {
   const [equation, setEquation] = useState('');
   const [isNewNumber, setIsNewNumber] = useState(true);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [_showHistory, _setShowHistory] = useState(false);
   const [isRetroTheme, setIsRetroTheme] = useState(false);
   const [currentMode, setCurrentMode] = useState<CalculatorMode>('standard');
 
