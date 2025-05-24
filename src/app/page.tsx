@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Head from 'next/head';
 import UnitConverter from './components/UnitConverter';
 import DateCalculator from './components/DateCalculator';
@@ -22,58 +22,21 @@ export default function Home() {
   const [isRetroTheme, setIsRetroTheme] = useState(false);
   const [currentMode, setCurrentMode] = useState<CalculatorMode>('standard');
 
-  useEffect(() => {
-    if (isRetroTheme) {
-      document.body.classList.add('retro-theme');
-    } else {
-      document.body.classList.remove('retro-theme');
-    }
-  }, [isRetroTheme]);
-
-  // Klavye olaylarını dinle
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      // Sayısal tuşlar ve nokta
-      if (/^[0-9.]$/.test(event.key)) {
-        handleNumber(event.key);
-      }
-      // Operatörler
-      else if (['+', '-', '*', '/'].includes(event.key)) {
-        handleOperator(event.key);
-      }
-      // Enter tuşu
-      else if (event.key === 'Enter') {
-        handleEqual();
-      }
-      // Escape tuşu
-      else if (event.key === 'Escape') {
-        handleClear();
-      }
-      // Backspace tuşu
-      else if (event.key === 'Backspace') {
-        handleBackspace();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [display, equation, isNewNumber]); // Bağımlılıkları ekledik
-
-  const handleNumber = (num: string) => {
+  const handleNumber = useCallback((num: string) => {
     if (isNewNumber) {
       setDisplay(num);
       setIsNewNumber(false);
     } else {
       setDisplay(display === '0' ? num : display + num);
     }
-  };
+  }, [display, isNewNumber]);
 
-  const handleOperator = (operator: string) => {
+  const handleOperator = useCallback((operator: string) => {
     setEquation(display + ' ' + operator + ' ');
     setIsNewNumber(true);
-  };
+  }, [display]);
 
-  const handleEqual = () => {
+  const handleEqual = useCallback(() => {
     try {
       const result = eval(equation + display);
       const newHistoryItem = {
@@ -84,18 +47,18 @@ export default function Home() {
       setDisplay(String(result));
       setEquation('');
       setIsNewNumber(true);
-    } catch (error) {
+    } catch {
       setDisplay('Error');
       setEquation('');
       setIsNewNumber(true);
     }
-  };
+  }, [equation, display]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setDisplay('0');
     setEquation('');
     setIsNewNumber(true);
-  };
+  }, []);
 
   const handleDecimal = () => {
     if (!display.includes('.')) {
@@ -112,15 +75,14 @@ export default function Home() {
     setDisplay(String(-parseFloat(display)));
   };
 
-  // Backspace işlevi
-  const handleBackspace = () => {
+  const handleBackspace = useCallback(() => {
     if (display.length > 1) {
       setDisplay(display.slice(0, -1));
     } else {
       setDisplay('0');
       setIsNewNumber(true);
     }
-  };
+  }, [display]);
 
   const handleScientific = (operation: string) => {
     const value = parseFloat(display);
@@ -389,6 +351,37 @@ export default function Home() {
         );
     }
   };
+
+  useEffect(() => {
+    if (isRetroTheme) {
+      document.body.classList.add('retro-theme');
+    } else {
+      document.body.classList.remove('retro-theme');
+    }
+  }, [isRetroTheme]);
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (/^[0-9.]$/.test(event.key)) {
+        handleNumber(event.key);
+      }
+      else if (['+', '-', '*', '/'].includes(event.key)) {
+        handleOperator(event.key);
+      }
+      else if (event.key === 'Enter') {
+        handleEqual();
+      }
+      else if (event.key === 'Escape') {
+        handleClear();
+      }
+      else if (event.key === 'Backspace') {
+        handleBackspace();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [handleNumber, handleOperator, handleEqual, handleClear, handleBackspace]);
 
   return (
     <>

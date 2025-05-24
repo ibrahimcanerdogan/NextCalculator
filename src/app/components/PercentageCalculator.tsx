@@ -97,7 +97,7 @@ export default function PercentageCalculator() {
             <div className="percentage-result mt-4 p-4 rounded-lg">
               <div className="text-gray-500 text-sm">Sonuç</div>
               <div className="text-gray-800 text-lg">
-                {value} sayısının %{percentage}'i = {result.amount.toFixed(2)}
+                {value} sayısının %{percentage}&apos;i = {result.amount.toFixed(2)}
               </div>
             </div>
           )}
