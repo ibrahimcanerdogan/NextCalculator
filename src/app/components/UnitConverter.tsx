@@ -273,7 +273,7 @@ export default function UnitConverter() {
         return;
       }
       setResult(converted.toFixed(4));
-    } catch (error) {
+    } catch (_error) {
       setResult('Dönüştürme hatası');
     }
   };
