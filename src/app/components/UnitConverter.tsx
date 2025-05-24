@@ -273,7 +273,8 @@ export default function UnitConverter() {
         return;
       }
       setResult(converted.toFixed(4));
-    } catch (_error) {
+    } catch (error) {
+      console.error('Unit conversion error:', error);
       setResult('Dönüştürme hatası');
     }
   };
