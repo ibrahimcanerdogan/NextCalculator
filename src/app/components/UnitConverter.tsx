@@ -171,39 +171,73 @@ const units: Record<UnitType, Unit[]> = {
     }},
   ],
   currency: [
-    { label: 'Türk Lirası (TRY)', value: 'try', convert: async (v, to) => {
+    { label: 'Türk Lirası (TRY)', value: 'try', convert: (v, to) => {
       // Not: Gerçek uygulamada API'den güncel kurları çekmelisiniz
       const rates: Record<string, number> = {
         usd: 0.031,
         eur: 0.029,
         gbp: 0.025,
+        jpy: 4.67,
+        cny: 0.22,
+        try: 1
       };
-      return v * (rates[to] || 1);
+      return v * rates[to];
     }},
-    { label: 'Amerikan Doları (USD)', value: 'usd', convert: async (v, to) => {
+    { label: 'Amerikan Doları (USD)', value: 'usd', convert: (v, to) => {
       const rates: Record<string, number> = {
         try: 32.26,
         eur: 0.93,
         gbp: 0.80,
+        jpy: 150.65,
+        cny: 7.10,
+        usd: 1
       };
-      return v * (rates[to] || 1);
+      return v * rates[to];
     }},
-    { label: 'Euro (EUR)', value: 'eur', convert: async (v, to) => {
+    { label: 'Euro (EUR)', value: 'eur', convert: (v, to) => {
       const rates: Record<string, number> = {
         try: 34.69,
         usd: 1.08,
         gbp: 0.86,
+        jpy: 162.01,
+        cny: 7.63,
+        eur: 1
       };
-      return v * (rates[to] || 1);
+      return v * rates[to];
     }},
-    { label: 'İngiliz Sterlini (GBP)', value: 'gbp', convert: async (v, to) => {
+    { label: 'İngiliz Sterlini (GBP)', value: 'gbp', convert: (v, to) => {
       const rates: Record<string, number> = {
         try: 40.33,
         usd: 1.25,
         eur: 1.16,
+        jpy: 188.31,
+        cny: 8.88,
+        gbp: 1
       };
-      return v * (rates[to] || 1);
+      return v * rates[to];
     }},
+    { label: 'Japon Yeni (JPY)', value: 'jpy', convert: (v, to) => {
+      const rates: Record<string, number> = {
+        try: 0.21,
+        usd: 0.0066,
+        eur: 0.0062,
+        gbp: 0.0053,
+        cny: 0.047,
+        jpy: 1
+      };
+      return v * rates[to];
+    }},
+    { label: 'Çin Yuanı (CNY)', value: 'cny', convert: (v, to) => {
+      const rates: Record<string, number> = {
+        try: 4.55,
+        usd: 0.14,
+        eur: 0.13,
+        gbp: 0.11,
+        jpy: 21.22,
+        cny: 1
+      };
+      return v * rates[to];
+    }}
   ],
 };
 
@@ -227,10 +261,21 @@ export default function UnitConverter() {
     }
 
     const fromUnitObj = units[conversionType].find(u => u.value === fromUnit);
-    if (!fromUnitObj) return;
+    if (!fromUnitObj) {
+      setResult('Birim bulunamadı');
+      return;
+    }
 
-    const converted = fromUnitObj.convert(numValue, toUnit);
-    setResult(converted.toFixed(4));
+    try {
+      const converted = fromUnitObj.convert(numValue, toUnit);
+      if (typeof converted !== 'number' || isNaN(converted)) {
+        setResult('Dönüştürme hatası');
+        return;
+      }
+      setResult(converted.toFixed(4));
+    } catch (error) {
+      setResult('Dönüştürme hatası');
+    }
   };
 
   const handleTypeChange = (newType: UnitType) => {
